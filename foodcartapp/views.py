@@ -58,10 +58,22 @@ def product_list_api(request):
 
 
 def register_order(request):
-    try:
-        print(json.loads(request.body.decode()))
-        return JsonResponse({'status': 'ok'})
-    except ValueError:
+    # TODO это лишь заглушка
 
-        return JsonResponse({'err':'bla bla bla'})
+    try:
+        data = json.loads(request.body.decode())
+        order = Order.objects.create(
+            firstname = data['firstname'],
+            lastname = data['lastname'],
+            phonenumber = data['phonenumber'],
+            address = data['address']
+            )
+        for item in data['products']:
+            product = Product.objects.get(id=item['product'])
+            OrderItem.objects.create(order=order, product=product, quantity=item['quantity'])
+            
+    except ValueError:
+        return JsonResponse({
+            'error': 'bla bla bla',
+        })
         
